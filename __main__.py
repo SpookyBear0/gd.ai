@@ -7,9 +7,15 @@ import win32con
 import random
 import time
 import math
+from threading import Thread
+from tkinter import *
+import pynput
+import os
 
+w = Tk()
 mem = gd.memory.get_memory()
 win = win32gui.FindWindow(None, 'Geometry Dash')
+path = os.path.dirname(os.path.realpath(__file__))
 
 def click():
     win32api.SendMessage(win, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, win32api.MAKELONG(10, 10))
@@ -70,10 +76,16 @@ class Population:
 
     def run(self):
         self.gen += 1
+        g = open(path + "/gen.txt", "w")
+        g.write("Gen: " + str(self.gen))
+        g.close()
         print(f'GEN {self.gen}')
         mem.player_kill()
         
         for i in range(len(self.pop)):
+            s = open(path + "/species.txt", "w")
+            s.write("Species: " + str(i))
+            s.close()
             while mem.is_dead():
                 pass
             self.pop[i].run()
@@ -120,6 +132,16 @@ class Population:
     def mutate(self):
         for i in range(1, len(self.pop)):
             self.pop[i].mutate()
+            
+def update_gui():
+    gentk = Label(w, text=open(path + "/gen.txt", "r").read()).grid(row=1)
+    stk = Label(w, text=open(path + "/species.txt", "r").read()).grid(row=2)
+    w.after(10, update_gui)
+            
 
 pop = Population(10, math.floor(mem.get_level_length() + 100))
-pop.run()
+popt = Thread(target=pop.run)
+popt.start()
+w.geometry()
+w.after(10, update_gui)
+w.mainloop()
