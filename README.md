@@ -14,3 +14,6 @@ Open the directory of the bot in command prompt
 Type `py .` in console
 
 Click the play button
+
+## Fork
+This is a fork of FigmentBoy/GD-Genetic-Algorithm and credit goes to him for making the base of this.
